@@ -1,0 +1,29 @@
+name: Build C++ Executable
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: sudo apt-get install -y build-essential
+
+    - name: Compile C++ code
+      run: g++ -o force_feedback main.cpp -ldinput8 -ldxguid
+
+    - name: Upload executable
+      uses: actions/upload-artifact@v3
+      with:
+        name: force_feedback
+        path: force_feedback
