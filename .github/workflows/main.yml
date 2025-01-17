@@ -1,4 +1,4 @@
-name: Build C++ Executable
+name: Build Windows Executable with DirectX SDK
 
 on:
   push:
@@ -10,20 +10,28 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Install dependencies
-      run: sudo apt-get install -y build-essential
+    - name: Set up Visual Studio
+      uses: microsoft/setup-msbuild@v1
+      with:
+        vs-version: 2019
+
+    - name: Install DirectX SDK
+      run: |
+        choco install directx-sdk -y
+        refreshenv
 
     - name: Compile C++ code
-      run: g++ -o force_feedback main.cpp -ldinput8 -ldxguid
+      run: |
+        cl /EHsc main.cpp /link /LIBPATH:"C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86" dinput8.lib dxguid.lib /out:force_feedback.exe
 
     - name: Upload executable
       uses: actions/upload-artifact@v3
       with:
         name: force_feedback
-        path: force_feedback
+        path: force_feedback.exe
